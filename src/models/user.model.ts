@@ -15,13 +15,13 @@ export interface IUser extends Document {
 }
 
 export interface CreateUserBody {
-    businessName: string;
-    username: string;
-    email: string;
-    password: string;
-    description?: string;
-    instagram?: string;
-    isVerified?: boolean;
+	businessName: string;
+	username: string;
+	email: string;
+	password: string;
+	description?: string;
+	instagram?: string;
+	isVerified?: boolean;
 }
 
 const userSchema = new Schema<IUser>(
@@ -72,13 +72,13 @@ userSchema.pre<IUser>('save', async function (next) {
 	const user = this;
 	if (!user.isModified('password')) return next();
 	try {
-        const salt = await bcrypt.genSalt(10);
-	    const hash = await bcrypt.hash(user.password, salt);
-	    user.password = hash;
-	next();
-    } catch (error: unknown) {
-        logger.error(error)
-    }
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(user.password, salt);
+		user.password = hash;
+		next();
+	} catch (error: unknown) {
+		logger.error(error);
+	}
 });
 
 userSchema.methods.validatePassword = async function (
