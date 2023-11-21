@@ -33,7 +33,7 @@ const unexpectedErrorHandler = (error: unknown) => {
 
 /**
  * @description Normalize a port into a number, string, or false.
- * @param {number} port The port to normalize. 
+ * @param {number} port The port to normalize.
  * @param {string} val The port to normalize.
  * @returns {number | string | boolean} The normalized port.
  * @example normalizePort('3000') // 3000
@@ -102,7 +102,6 @@ app.set('port', port);
 
 server.on('error', onError);
 server.on('listening', onListening);
-
 
 connectToMongoose(config.uri).then(() => {
 	server.listen(port, () => {
