@@ -1,7 +1,8 @@
-import httpStatus from "http-status";
-import { User, CreateUserBody, IUser } from "../models/user.model";
-import ApiError from "../utils/ApiError";
-import { logger } from "../config/logger";
+import httpStatus from 'http-status';
+import { User, CreateUserBody, IUser } from '../models/index';
+import { Client, CreateClientBody, IClient } from '../models/index';
+import ApiError from '../utils/ApiError';
+import { logger } from '../config/logger';
 
 /**
  * @description Check if the user email is already taken
@@ -9,8 +10,8 @@ import { logger } from "../config/logger";
  * @returns {Promise<boolean>} Returns a promise that resolves when the user email is taken or not
  */
 const isEmailTaken = async (email: string): Promise<boolean> => {
-    const user = await User.findOne({ email });
-    return !!user;
+	const user = await User.findOne({ email });
+	return !!user;
 };
 
 /**
@@ -19,86 +20,121 @@ const isEmailTaken = async (email: string): Promise<boolean> => {
  * @returns {Promise<IUser>} Returns a promise that resolves when the user is created
  */
 const createUser = async (userBody: CreateUserBody): Promise<IUser> => {
-    if (await isEmailTaken(userBody.email)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-    }
-  
-    const user = await User.create(userBody);
-  
-    if (!user) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'User not created');
-    }
-  
-    return user;
+	if (await isEmailTaken(userBody.email)) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+	}
+
+	const user = await User.create(userBody);
+
+	if (!user) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'User not created');
+	}
+
+	return user;
 };
 
 /**
- * @description Get a user by id 
- * @param userId - The user id to get the user from 
+ * @description Get a user by id
+ * @param userId - The user id to get the user from
  * @returns {Promise<IUser>} Returns a promise that resolves when the user is found
  */
 const getUserById = async (userId: string): Promise<IUser> => {
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-    }
-    return user;
+	const user = await User.findById(userId);
+	if (!user) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+	}
+	return user;
 };
 
 /**
  * @description Get a user by email
- * @param {string} email - The user email to get the user from 
+ * @param {string} Email - The user email to get the user  from
  * @returns {Promise<object>} Returns a promise that resolves when the user is found
  */
 const getUserByEmail = async (email: string): Promise<IUser> => {
-    const user = await User.findOne({ email });
-  
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-    }
-  
-    return user;
+	const user = await User.findOne({ email });
+
+	if (!user) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+	}
+
+	return user;
+};
+
+const createClient = async (clientBody: CreateClientBody): Promise<IClient> => {
+	const client = await Client.create(clientBody);
+	if (!client) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Client not created');
+	}
+	return client;
+};
+
+/**
+ * @description Get a client by id
+ * @param clientId - The client id to get the user from
+ * @returns {Promise<IClient>} Returns a promise that resolves when the client is found
+ */
+const getClientById = async (clientId: string): Promise<IClient> => {
+	const client = await Client.findById(clientId);
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'Client not found');
+	}
+	return client;
+};
+
+/**
+ * @description Get a client by email
+ * @param {string} clientEmail - The client email to get the client  from
+ * @returns {Promise<object>} Returns a promise that resolves when the client is found
+ */
+const getClientByEmail = async (clientEmail: string): Promise<IClient> => {
+	const client = await Client.findOne({ clientEmail });
+
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+	}
+
+	return client;
 };
 
 /**
  * @description Update a user by id
- * @param {string} userId - The user id to update
+ * @param {string} clientId - The user id to update
  * @param {object} updateBody - The user body to update
  * @param {string[]} exclude - The user fields to exclude
  * @returns {Promise<object>} Returns a promise that resolves when the user is updated
  */
-const updateUserById = async (
-    userId: string,
-    updateBody: any,
-    exclude: any[]
+const updateClientById = async (
+	clientId: string,
+	updateBody: CreateClientBody,
 ): Promise<any> => {
-    const user = await getUserById(userId);
-    if (!user) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-    }
-    await Object.assign(user, updateBody);
-    await user.save();
-    return {
-        ...user,
-        createdAt: undefined,
-    };
+	const client = await getClientById(clientId);
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'Client not found');
+	}
+	Object.assign(client, updateBody);
+	await client.save();
+	return {
+		...client,
+		createdAt: undefined,
+	};
 };
 
 /**
- * @description Delete a user by id
- * @param userId The id of the user to delete
- * @returns {Promise<IUser | null>} Returns a promise that resolves when the user is deleted
+ * @description Delete a client by id
+ * @param clientId The id of the client to delete
+ * @returns {Promise<IClient | null>} Returns a promise that resolves when the client is deleted
  */
-const deleteUserById = async (userId: string): Promise<IUser | null> => {
-    const user = await User.findByIdAndDelete(userId);
-  
-    if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-    }
-  
-    logger.info('User deleted successfully');
-    return user;
-  };
+const deleteClientById = async (clientId: string): Promise<IClient | null> => {
+	const client = await Client.findByIdAndDelete(clientId);
+
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'Client not found');
+	}
+
+	logger.info('Client deleted successfully');
+	return client;
+};
 
 /**
  * @description Query users by their attributes
@@ -109,47 +145,50 @@ const deleteUserById = async (userId: string): Promise<IUser | null> => {
  * @param {string[]} exclude - The user attributes to exclude
  * @returns {Promise<object>} Returns a promise that resolves when the users are queried
  */
-const queryUsers = async (
-    limit: number,
-    page: number,
-    where: any,
-    include: string[] = [],
-    exclude: string[] = []
+const queryClient = async (
+	limit: number,
+	page: number,
+	where: any,
+	include: string[] = [],
+	exclude: string[] = [],
 ): Promise<any> => {
-    page = page || 1;
-    limit = limit || 20;
+	page = page || 1;
+	limit = limit || 20;
 
-    const usersCount = await User.estimatedDocumentCount(where);
-    const users = await User.find(where)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .select([include.join(' '), exclude.join(' ')].join(' '));
-    
-    const count = users.length;
-    const totalPages = Math.round(usersCount / count) || 0;
-    const hasNextPage = page < totalPages;
-    const hasPreviousPage = page > 1;
-    const nextPage = hasNextPage ? page + 1 : null;
-    const previousPage = hasPreviousPage ? page - 1 : null;
-    return {
-        users,
-        page,
-        limit,
-        count,
-        totalPages,
-        hasNextPage,
-        hasPreviousPage,
-        nextPage,
-        previousPage,
-    };
-}
+	const clientsCount = await Client.estimatedDocumentCount(where);
+	const clients = await User.find(where)
+		.skip((page - 1) * limit)
+		.limit(limit)
+		.select([include.join(' '), exclude.join(' ')].join(' '));
+
+	const count = clients.length;
+	const totalPages = Math.round(clientsCount / count) || 0;
+	const hasNextPage = page < totalPages;
+	const hasPreviousPage = page > 1;
+	const nextPage = hasNextPage ? page + 1 : null;
+	const previousPage = hasPreviousPage ? page - 1 : null;
+	return {
+		clients,
+		page,
+		limit,
+		count,
+		totalPages,
+		hasNextPage,
+		hasPreviousPage,
+		nextPage,
+		previousPage,
+	};
+};
 
 export const userService = {
-    isEmailTaken,
-    createUser,
-    getUserById,
-    getUserByEmail,
-    updateUserById,
-    deleteUserById,
-    queryUsers,
+	isEmailTaken,
+	createUser,
+	getUserById,
+	getUserByEmail,
+	createClient,
+	getClientById,
+	getClientByEmail,
+	updateClientById,
+	deleteClientById,
+	queryClient,
 };
