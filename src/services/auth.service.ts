@@ -23,9 +23,15 @@ const login = async (
 	user.refreshToken = tokens.refresh.token;
 	await user.save();
 
+	 // Exclude refreshToken from the tokens object
+	 const tokensWithoutRefreshToken = {
+		...tokens,
+		refresh: undefined,
+	  };
+
 	return {
 		...user.toObject(),
-		tokens,
+		tokens: tokensWithoutRefreshToken,
 	};
 };
 
