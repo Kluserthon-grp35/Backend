@@ -53,33 +53,33 @@ const updateInvoiceById = async (
 	};
 };
 
-const getAllInvoices = async (limit: number, page: number): Promise<any> => {
-	limit = limit || 1;
-	page = page || 1;
+// const getAllInvoices = async (): Promise<any> => {
+// 	let limit = 1;
+// 	let page = 1;
 
-	const invoicesCount = await Invoice.estimatedDocumentCount();
-	const invoices = await Invoice.find({})
-		.skip((page - 1) * limit)
-		.limit(limit);
+// 	const invoicesCount = await Invoice.estimatedDocumentCount();
+// 	const invoices = await Invoice.find({})
+// 		.skip((page - 1) * limit)
+// 		.limit(limit);
 
-	const count = invoices.length;
-	const totalPages = Math.round(invoicesCount / count) || 0;
-	const hasNextPage = page < totalPages;
-	const hasPreviousPage = page > 1;
-	const nextPage = hasNextPage ? page + 1 : null;
-	const previousPage = hasPreviousPage ? page - 1 : null;
-	return {
-		invoices,
-		page,
-		limit,
-		count,
-		totalPages,
-		hasNextPage,
-		hasPreviousPage,
-		nextPage,
-		previousPage,
-	};
-};
+// 	const count = invoices.length;
+// 	const totalPages = Math.round(invoicesCount / count) || 0;
+// 	const hasNextPage = page < totalPages;
+// 	const hasPreviousPage = page > 1;
+// 	const nextPage = hasNextPage ? page + 1 : null;
+// 	const previousPage = hasPreviousPage ? page - 1 : null;
+// 	return {
+// 		invoices,
+// 		page,
+// 		limit,
+// 		count,
+// 		totalPages,
+// 		hasNextPage,
+// 		hasPreviousPage,
+// 		nextPage,
+// 		previousPage,
+// 	};
+// };
 
 const getInvoiceCount = async (): Promise<number> => {
 	const invoicesCount = await Invoice.estimatedDocumentCount();
@@ -130,7 +130,7 @@ export const invoiceService = {
 	createInvoice,
 	getInvoiceById,
 	updateInvoiceById,
-	getAllInvoices,
+	// getAllInvoices,
 	getInvoiceCount,
 	deleteInvoiceById,
 	markInvoiceOverdue,
