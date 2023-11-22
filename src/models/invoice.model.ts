@@ -4,6 +4,7 @@ import { logger } from '../config/logger';
 import { invoiceStatusTypes } from '../config/invoiceStatusType';
 
 export interface IInvoice extends Document {
+	invoiceId: string;
 	clientId: mongoose.Types.ObjectId;
 	amount: Number;
 	dueDate: Date;
@@ -29,6 +30,10 @@ const invoiceSchema = new Schema<IInvoice>(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Client',
 			required: true,
+		},
+		invoiceId: {
+			type: String,
+			required: true
 		},
 		amount: {
 			type: Number,
@@ -60,3 +65,5 @@ const invoiceSchema = new Schema<IInvoice>(
 	},
 	{ timestamps: true, collection: 'user' },
 );
+
+export const Invoice = mongoose.model<IInvoice>('Invoice', invoiceSchema);
