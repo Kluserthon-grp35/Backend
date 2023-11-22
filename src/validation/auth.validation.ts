@@ -21,7 +21,7 @@ const register = {
 const login = {
 	body: Joi.object().keys({
 		email: Joi.string().required(),
-		password_hash: Joi.string().required(),
+		password: Joi.string().required(),
 	}),
 };
 
@@ -60,7 +60,8 @@ const resetPassword = {
 		token: Joi.string().required(),
 	}),
 	body: Joi.object().keys({
-		password: Joi.string().required().custom(passwordHelper),
+		newPassword: Joi.string().required().custom(passwordHelper),
+		confirmPassword: Joi.string().required().custom(passwordHelper),
 	}),
 };
 

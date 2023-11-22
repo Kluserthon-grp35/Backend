@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
 import config from '../config/index';
@@ -6,6 +6,7 @@ import { User, IUser, Token } from '../models/index';
 import { userService } from './index';
 import ApiError from '../utils/ApiError';
 import { tokenTypes } from '../config/tokenType';
+import { logger } from '../config/logger';
 
 interface Payload {
 	sub: string | { id: string; email: string };
@@ -53,8 +54,7 @@ const saveToken = async (
 	type: string,
 	blacklisted: boolean = false,
 ): Promise<IUser> => {
-	const user = await User.findOne({ id: userId });
-
+	const user = await User.findOne({ _id: userId });
 	if (!user) {
 		throw new Error('User not found');
 	}
@@ -70,17 +70,31 @@ const saveToken = async (
  * @param type string type of token to verify
  * @returns Generated token object
  */
-const verifyToken = async (token: string, type: string): Promise<any> => {
-	const payload: any = jwt.verify(token, config.jwt.secret);
-	const tokenDoc = await Token.findOne({
-		where: { token, type, user: payload.sub, blacklisted: false },
-	});
-	if (!tokenDoc) {
-		throw new Error('Token not found');
-	}
-	return tokenDoc;
-};
+const verifyToken = async (token: string): Promise<any> => {
+	try {
+		const payload = jwt.verify(token, config.jwt.secret) as JwtPayload & {
+			sub: string;
+		};
+		if (!payload) {
+			console.log('Failed to verify token');
+		}
 
+		const tokenDoc = await Token.findOne({
+			token,
+			type: tokenTypes.VERIFY_EMAIL,
+			user: payload.sub,
+			blacklisted: false,
+		});
+		if (!tokenDoc) {
+			throw new Error('Token not found');
+		}
+		return tokenDoc;
+	} catch (error) {
+		const errorMessage = (error as Error).message;
+		logger.error(`Error verifying token: ${errorMessage}`);
+		throw error;
+	}
+};
 /**
  * @description Generate auth tokens from user object
  * @param user User object to generate tokens from
@@ -158,11 +172,17 @@ const generateVerifyEmailToken = async (user: any) => {
 		'minutes',
 	);
 	const verifyEmailToken = generateToken(
-		user.id,
+		user._id,
 		expires,
 		tokenTypes.VERIFY_EMAIL,
 	);
-	await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);
+	const userId = user._id;
+	await Token.create({
+		token: verifyEmailToken,
+		user: userId,
+		type: tokenTypes.VERIFY_EMAIL,
+		expires: expires,
+	});
 	return verifyEmailToken;
 };
 
