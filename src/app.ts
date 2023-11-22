@@ -11,7 +11,7 @@ import { authLimiter } from './middlewares/rateLimiter';
 import config from './config/index';
 import morgan from './config/morgan';
 import ApiRouter from './routes/index';
-import swaggerDocument from './swagger/swagger'
+import swaggerDocument from './swagger/swagger';
 import swaggerUi from 'swagger-ui-express';
 
 const app = express();
@@ -70,12 +70,7 @@ app.use(function (err, req, res, next) {
 	res.status(err.status || 500).end();
 } as ErrorRequestHandler);
 
-
 // Swagger-doc
-app.use(
-	'/api-docs',
-	swaggerUi.serve,
-	swaggerUi.setup(swaggerDocument)
-)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 export default app;

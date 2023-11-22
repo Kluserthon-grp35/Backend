@@ -1,8 +1,6 @@
-
 import swaggerDocument from './swagger-output.json';
-import swaggerAutogen from 'swagger-autogen'
-import SwaggerUi from 'swagger-ui-express'
-
+import swaggerAutogen from 'swagger-autogen';
+import SwaggerUi from 'swagger-ui-express';
 
 const doc = {
 	info: {
@@ -15,8 +13,6 @@ const doc = {
 const outputFile = './swagger-output.json';
 const routes = ['../routes/auth.route.ts', '../routes/user.route.ts'];
 
+swaggerAutogen(outputFile, routes, doc);
 
-swaggerAutogen(outputFile, routes, doc)
-
-export default swaggerDocument
-
+export default swaggerDocument;
