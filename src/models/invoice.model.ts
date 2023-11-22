@@ -33,7 +33,7 @@ const invoiceSchema = new Schema<IInvoice>(
 		},
 		invoiceId: {
 			type: String,
-			required: true
+			required: true,
 		},
 		amount: {
 			type: Number,
