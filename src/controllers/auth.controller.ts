@@ -56,36 +56,34 @@ const verifyEmailController = Asyncly(async (req, res) => {
 	});
 });
 
-
 const forgotPasswordController = Asyncly(async (req, res) => {
 	const { email } = req.body;
 	if (!email) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Email is required');
 	}
-	
-	
+
 	await authService.forgotPassword(email);
 	res.status(httpStatus.OK).json({
 		status: httpStatus.OK,
 		success: true,
 		message: 'Password reset link sent successfully',
 	});
-})
+});
 
 const resetPasswordController = Asyncly(async (req, res) => {
-	const { token, newPassword, confirmPassword } = req.body;
+	const token = req.query?.token as string;
+	const { newPassword, confirmPassword } = req.body;
 	if (newPassword !== confirmPassword) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'Passwords do not match');
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Passwords do not match');
 	}
-  
-	
+
 	await authService.resetPassword(token, newPassword);
-		res.status(httpStatus.OK).json({
+	res.status(httpStatus.OK).json({
 		status: httpStatus.OK,
 		success: true,
 		message: 'Password reset successful',
 	});
-})
+});
 
 export const authController = {
 	signin,

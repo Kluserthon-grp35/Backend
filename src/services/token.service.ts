@@ -78,7 +78,7 @@ const verifyToken = async (token: string): Promise<any> => {
 		if (!payload) {
 			console.log('Failed to verify token');
 		}
-		
+
 		const tokenDoc = await Token.findOne({
 			token,
 			type: tokenTypes.VERIFY_EMAIL,

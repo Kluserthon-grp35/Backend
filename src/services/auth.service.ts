@@ -78,45 +78,55 @@ const verifyEmail = async (token: string): Promise<IUser> => {
  * @param {string} email - The email address of the user
  */
 const forgotPassword = async (email: string): Promise<boolean> => {
-	const resetPasswordToken = await tokenService.generateResetPasswordToken(email);
+	const resetPasswordToken =
+		await tokenService.generateResetPasswordToken(email);
 	if (!resetPasswordToken) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+		throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
 	}
-  
-	const isEmailSent = await emailService.sendResetPasswordEmail(email, resetPasswordToken);
+
+	const isEmailSent = await emailService.sendResetPasswordEmail(
+		email,
+		resetPasswordToken,
+	);
 	if (!isEmailSent) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'An error occurred in sending email');
+		throw new ApiError(
+			httpStatus.BAD_REQUEST,
+			'An error occurred in sending email',
+		);
 	}
-  
+
 	return true;
 };
 
-const resetPassword = async (token: string, newPassword: string): Promise<boolean> => {
+const resetPassword = async (
+	token: string,
+	newPassword: string,
+): Promise<boolean> => {
 	const tokenDoc = await tokenService.verifyToken(token);
 	if (!tokenDoc) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
 	}
-  
+
 	const now = moment();
 	if (now.isAfter(tokenDoc.expires)) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'Token expired');
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Token expired');
 	}
-  
+
 	const user = await userService.getUserById(tokenDoc.user);
 	if (!user) {
-	  throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+		throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
 	}
-  
+
 	user.password = newPassword;
 	await user.save();
-  
+
 	// Generate a new refresh token
 	const expires = moment().add(config.jwt.refreshExpirationDays, 'days');
 	const refreshToken = tokenService.generateToken(user._id, expires, 'REFRESH');
 	await tokenService.saveToken(refreshToken, user._id, expires, 'REFRESH');
-  
+
 	return true;
-  };
+};
 
 export const authService = {
 	login,
