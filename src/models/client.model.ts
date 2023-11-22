@@ -1,8 +1,9 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import { logger } from '../config/logger';
+import { string } from 'joi';
 
 export interface IClient extends Document {
-	businessOwnerId: mongoose.Types.ObjectId;
+	businessOwnerId: string;
 	clientName: string;
 	clientEmail: string;
 	clientPhoneNumber: string;
@@ -20,7 +21,7 @@ export interface CreateClientBody {
 
 const clientSchema = new Schema<IClient>({
 	businessOwnerId: {
-		type: mongoose.Types.ObjectId,
+		type: String,
 		ref: 'User',
 		required: true,
 	},

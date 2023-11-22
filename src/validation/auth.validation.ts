@@ -21,7 +21,7 @@ const register = {
 const login = {
 	body: Joi.object().keys({
 		email: Joi.string().required(),
-		password_hash: Joi.string().required(),
+		password: Joi.string().required(),
 	}),
 };
 

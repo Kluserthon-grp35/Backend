@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
-import { IUser, CreateUserBody } from '../models/index';
-import { userService, tokenService } from './index';
+import moment from 'moment';
+import { IUser, CreateUserBody, Token } from '../models/index';
+import { userService, tokenService, emailService } from './index';
 import ApiError from '../utils/ApiError';
 
 /**
@@ -23,11 +24,11 @@ const login = async (
 	user.refreshToken = tokens.refresh.token;
 	await user.save();
 
-	 // Exclude refreshToken from the tokens object
-	 const tokensWithoutRefreshToken = {
+	// Exclude refreshToken from the tokens object
+	const tokensWithoutRefreshToken = {
 		...tokens,
 		refresh: undefined,
-	  };
+	};
 
 	return {
 		...user.toObject(),
@@ -35,17 +36,45 @@ const login = async (
 	};
 };
 
-const register = async (userBody: CreateUserBody): Promise<{ user: IUser }> => {
+const register = async (userBody: CreateUserBody): Promise<boolean> => {
 	const user = await userService.createUser(userBody);
-	if (!user) {
-		throw new ApiError(httpStatus.BAD_REQUEST, 'User not created');
-	}
-	return {
-		...user.toObject(),
-	};
+	const token = await tokenService.generateVerifyEmailToken(user);
+	await emailService.sendVerificationEmail(user.email, token);
+	return true;
 };
+
+/**
+ * @description Verify email using the provided token
+ * @param {string} token - The email verification token
+ * @returns {Promise<IUser>} - Returns the verified user
+ */
+const verifyEmail = async (token: string): Promise<IUser> => {
+	const tokenDoc = await tokenService.verifyToken(token);
+	if (!tokenDoc) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
+	}
+
+	const now = moment();
+	if (now.isAfter(tokenDoc.expires)) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Token expired');
+	}
+	
+	const user = await userService.getUserById(tokenDoc.user);
+	if (!user) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+	}
+	user.isVerified = true;
+	await user.save();
+
+	tokenDoc.blacklisted = true;
+	await tokenDoc.save();
+
+	return user;
+
+}
 
 export const authService = {
 	login,
 	register,
+	verifyEmail,
 };

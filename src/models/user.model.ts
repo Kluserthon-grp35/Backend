@@ -87,4 +87,13 @@ userSchema.methods.validatePassword = async function (
 	return await bcrypt.compare(userPassword, this.password);
 };
 
+userSchema.set('toObject', {
+	transform: function (doc, ret) {
+		delete ret.password;
+		delete ret.refreshToken;
+		delete ret.__v;
+		return ret;
+	},
+});
+
 export const User = mongoose.model<IUser>('User', userSchema);

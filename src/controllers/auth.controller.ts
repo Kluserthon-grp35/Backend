@@ -3,6 +3,7 @@ import Asyncly from '../utils/Asyncly';
 import { authService } from '../services/index';
 import ApiError from '../utils/ApiError';
 
+
 const signin = Asyncly(async (req, res) => {
 	const { email, password } = req.body;
 	if (!email || !password) {
@@ -34,11 +35,30 @@ const signup = Asyncly(async (req, res) => {
 	res.status(httpStatus.CREATED).json({
 		status: httpStatus.CREATED,
 		success: true,
-		message: 'User created successfully',
+		message: 'User created, Check your mail for verification link',
 	});
 });
+
+const verifyEmailController = Asyncly(async (req, res) => {
+	const token = req.query.token as string;
+	
+	if (!token) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Token is required');
+	}
+	const user = await authService.verifyEmail(token);
+	if (!user) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+	}
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Email verified successfully',
+		data: user.toObject(),
+	});
+})
 
 export const authController = {
 	signin,
 	signup,
+	verifyEmailController,
 };
