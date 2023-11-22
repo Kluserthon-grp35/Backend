@@ -3,6 +3,7 @@ import moment from 'moment';
 import { IUser, CreateUserBody, Token } from '../models/index';
 import { userService, tokenService, emailService } from './index';
 import ApiError from '../utils/ApiError';
+import config from '../config/index';
 
 /**
  * @description Login with email and password
@@ -58,7 +59,7 @@ const verifyEmail = async (token: string): Promise<IUser> => {
 	if (now.isAfter(tokenDoc.expires)) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Token expired');
 	}
-	
+
 	const user = await userService.getUserById(tokenDoc.user);
 	if (!user) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
@@ -70,11 +71,57 @@ const verifyEmail = async (token: string): Promise<IUser> => {
 	await tokenDoc.save();
 
 	return user;
+};
 
-}
+/**
+ * @description generate a password reset token and send it to the user's email
+ * @param {string} email - The email address of the user
+ */
+const forgotPassword = async (email: string): Promise<boolean> => {
+	const resetPasswordToken = await tokenService.generateResetPasswordToken(email);
+	if (!resetPasswordToken) {
+	  throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+	}
+  
+	const isEmailSent = await emailService.sendResetPasswordEmail(email, resetPasswordToken);
+	if (!isEmailSent) {
+	  throw new ApiError(httpStatus.BAD_REQUEST, 'An error occurred in sending email');
+	}
+  
+	return true;
+};
+
+const resetPassword = async (token: string, newPassword: string): Promise<boolean> => {
+	const tokenDoc = await tokenService.verifyToken(token);
+	if (!tokenDoc) {
+	  throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
+	}
+  
+	const now = moment();
+	if (now.isAfter(tokenDoc.expires)) {
+	  throw new ApiError(httpStatus.BAD_REQUEST, 'Token expired');
+	}
+  
+	const user = await userService.getUserById(tokenDoc.user);
+	if (!user) {
+	  throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+	}
+  
+	user.password = newPassword;
+	await user.save();
+  
+	// Generate a new refresh token
+	const expires = moment().add(config.jwt.refreshExpirationDays, 'days');
+	const refreshToken = tokenService.generateToken(user._id, expires, 'REFRESH');
+	await tokenService.saveToken(refreshToken, user._id, expires, 'REFRESH');
+  
+	return true;
+  };
 
 export const authService = {
 	login,
 	register,
 	verifyEmail,
+	forgotPassword,
+	resetPassword,
 };

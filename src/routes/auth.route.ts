@@ -22,4 +22,16 @@ authRouter.get(
 	'/verify',
 	validate(authValidation.verifyEmail),
 	authController.verifyEmailController,
-)
+);
+
+authRouter.post(
+	'/forgot-password',
+	validate(authValidation.forgotPassword),
+	authController.forgotPasswordController,
+);
+
+authRouter.post(
+	'/reset-password',
+	validate(authValidation.resetPassword),
+	authController.resetPasswordController,
+);

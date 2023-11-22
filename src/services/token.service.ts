@@ -1,4 +1,4 @@
-import jwt, {  JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
 import config from '../config/index';
@@ -72,15 +72,16 @@ const saveToken = async (
  */
 const verifyToken = async (token: string): Promise<any> => {
 	try {
-		console.log('Verifying token: ', token);
-		const payload = jwt.verify(token, config.jwt.secret) as JwtPayload & { sub: string};
+		const payload = jwt.verify(token, config.jwt.secret) as JwtPayload & {
+			sub: string;
+		};
 		if (!payload) {
-			console.log("Failed to verify token in the verifytoken service");
+			console.log('Failed to verify token');
 		}
-		// console.log(JSON.parse(payload));
+		
 		const tokenDoc = await Token.findOne({
-			token, 
-			type: tokenTypes.VERIFY_EMAIL, 
+			token,
+			type: tokenTypes.VERIFY_EMAIL,
 			user: payload.sub,
 			blacklisted: false,
 		});
@@ -93,7 +94,7 @@ const verifyToken = async (token: string): Promise<any> => {
 		logger.error(`Error verifying token: ${errorMessage}`);
 		throw error;
 	}
-  };
+};
 /**
  * @description Generate auth tokens from user object
  * @param user User object to generate tokens from
