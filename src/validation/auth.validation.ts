@@ -32,7 +32,6 @@ const login = {
 	}),
 };
 
-
 /**
  * @description Validation schema for token refresh.
  */
