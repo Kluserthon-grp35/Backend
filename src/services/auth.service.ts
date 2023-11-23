@@ -4,6 +4,7 @@ import { IUser, CreateUserBody, Token } from '../models/index';
 import { userService, tokenService, emailService } from './index';
 import ApiError from '../utils/ApiError';
 import config from '../config/index';
+import { tokenTypes } from '../config/tokenType';
 
 /**
  * @description Login with email and password
@@ -19,6 +20,10 @@ const login = async (
 
 	if (!user || !(await user.validatePassword(password))) {
 		throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+	}
+
+	if (user.isVerified === false) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, 'Email not verified');
 	}
 
 	const tokens = await tokenService.generateAuthTokens(user);
@@ -50,7 +55,7 @@ const register = async (userBody: CreateUserBody): Promise<boolean> => {
  * @returns {Promise<IUser>} - Returns the verified user
  */
 const verifyEmail = async (token: string): Promise<IUser> => {
-	const tokenDoc = await tokenService.verifyToken(token);
+	const tokenDoc = await tokenService.verifyToken(token, tokenTypes.VERIFY_EMAIL);
 	if (!tokenDoc) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
 	}
@@ -102,7 +107,8 @@ const resetPassword = async (
 	token: string,
 	newPassword: string,
 ): Promise<boolean> => {
-	const tokenDoc = await tokenService.verifyToken(token);
+	console.log("token from service: ", token);
+	const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD);
 	if (!tokenDoc) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
 	}
@@ -119,6 +125,9 @@ const resetPassword = async (
 
 	user.password = newPassword;
 	await user.save();
+
+	tokenDoc.blacklisted = true;
+	await tokenDoc.save();
 
 	// Generate a new refresh token
 	const expires = moment().add(config.jwt.refreshExpirationDays, 'days');
