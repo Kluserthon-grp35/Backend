@@ -62,7 +62,7 @@ const sendVerificationEmail = async (
 ): Promise<boolean> => {
 	const subject = 'Verify Email';
 	// Ensure the change the baseurl to that of the frontend here
-	const verifyEmailUrl = `${config.baseUrl}/api/v1/auth/verify?token=${token}`;
+	const verifyEmailUrl = `https://payzen.onrender.com/api/v1/auth/verify?token=${token}`;
 	const text = `Dear Customer. To verify your email, please click on this link\n${verifyEmailUrl}\nIf you did not create an account, please ignore this link.`;
 	await sendMail(to, subject, text);
 	return true;
