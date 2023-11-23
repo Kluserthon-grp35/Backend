@@ -72,6 +72,7 @@ const forgotPasswordController = Asyncly(async (req, res) => {
 
 const resetPasswordController = Asyncly(async (req, res) => {
 	const token = req.query?.token as string;
+	console.log("token from controller: ", token);
 	const { newPassword, confirmPassword } = req.body;
 	if (newPassword !== confirmPassword) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Passwords do not match');

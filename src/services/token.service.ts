@@ -70,7 +70,7 @@ const saveToken = async (
  * @param type string type of token to verify
  * @returns Generated token object
  */
-const verifyToken = async (token: string): Promise<any> => {
+const verifyToken = async (token: string, tokenType: string): Promise<any> => {
 	try {
 		const payload = jwt.verify(token, config.jwt.secret) as JwtPayload & {
 			sub: string;
@@ -78,10 +78,10 @@ const verifyToken = async (token: string): Promise<any> => {
 		if (!payload) {
 			console.log('Failed to verify token');
 		}
-
+		
 		const tokenDoc = await Token.findOne({
 			token,
-			type: tokenTypes.VERIFY_EMAIL,
+			type: tokenType,
 			user: payload.sub,
 			blacklisted: false,
 		});
@@ -95,6 +95,8 @@ const verifyToken = async (token: string): Promise<any> => {
 		throw error;
 	}
 };
+
+
 /**
  * @description Generate auth tokens from user object
  * @param user User object to generate tokens from
@@ -148,16 +150,25 @@ const generateResetPasswordToken = async (email: string) => {
 		'minutes',
 	);
 	const resetPasswordToken = generateToken(
-		user.id,
+		user._id,
 		expires,
 		tokenTypes.RESET_PASSWORD,
 	);
-	await saveToken(
-		resetPasswordToken,
-		user.id,
+	
+	const userId = user._id;
+	
+	 
+	const createdToken = await Token.create({
+		token: resetPasswordToken,
+		user: userId,
+		type: tokenTypes.RESET_PASSWORD,
 		expires,
-		tokenTypes.RESET_PASSWORD,
-	);
+	});
+	
+	  if (!createdToken) {
+		throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to create reset password token');
+	  }
+
 	return resetPasswordToken;
 };
 
