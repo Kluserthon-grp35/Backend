@@ -11,8 +11,7 @@
 		"format": "prettier --write .",
 		"lint": "eslint . --fix",
 		"lint-format": "npm run lint && npm run format",
-		"test": "jest --test --coverage",
-		"prepare": "husky install"
+		"test": "jest --test --coverage"
 	},
 	"author": "",
 	"license": "ISC",
