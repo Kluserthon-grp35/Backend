@@ -44,7 +44,7 @@ const sendResetPasswordEmail = async (
 ): Promise<boolean> => {
 	const subject = 'Reset Password';
 	// Ensure the change the baseurl to that of the frontend here
-	const resetPasswordUrl = `${config.baseUrl}/reset-password?token=${token}`;
+	const resetPasswordUrl = `${config.baseUrl}/api/v1/auth/reset-password?token=${token}`;
 	const text = `Dear Customer. To reset your password, please click on this link: ${resetPasswordUrl}`;
 	await sendMail(to, subject, text);
 	return true;
@@ -62,7 +62,7 @@ const sendVerificationEmail = async (
 ): Promise<boolean> => {
 	const subject = 'Verify Email';
 	// Ensure the change the baseurl to that of the frontend here
-	const verifyEmailUrl = `${config.baseUrl}/verify?token=${token}`;
+	const verifyEmailUrl = `${config.baseUrl}/api/v1/auth/verify?token=${token}`;
 	const text = `Dear Customer. To verify your email, please click on this link: ${verifyEmailUrl}\nIf you did not create an account, please ignore this link.`;
 	await sendMail(to, subject, text);
 	return true;
