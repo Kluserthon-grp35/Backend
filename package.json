@@ -6,12 +6,15 @@
 	"scripts": {
 		"compile": "tsc -p .",
 		"start": "node dist/bin/www.js",
-		"dev": "nodemon src/bin/www.ts",
+		"dev": "npm run swagger && nodemon src/bin/www.ts ",
 		"build": "tsc -p .",
 		"format": "prettier --write .",
 		"lint": "eslint . --fix",
 		"lint-format": "npm run lint && npm run format",
-		"test": "jest --test --coverage"
+		"test": "jest --test --coverage",
+		"prepare": "husky install",
+		"swagger": "node ./src/swagger/swagger.ts"
+
 	},
 	"author": "",
 	"license": "ISC",
@@ -31,9 +34,11 @@
 		"joi": "^17.11.0",
 		"jsonwebtoken": "^9.0.2",
 		"moment": "^2.29.4",
+		"mongodb": "^6.3.0",
 		"mongoose": "^8.0.1",
 		"morgan": "^1.10.0",
 		"nodemailer": "^6.9.7",
+		"ts-node": "^10.9.1",
 		"winston": "^3.11.0"
 	},
 	"engines": {
@@ -52,6 +57,8 @@
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/morgan": "^1.9.9",
 		"@types/nodemailer": "^6.4.14",
+		"@types/swagger-jsdoc": "^6.0.4",
+		"@types/swagger-ui-express": "^4.1.6",
 		"eslint": "^8.54.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.1",
@@ -60,6 +67,9 @@
 		"nodemon": "^3.0.1",
 		"prettier": "^3.1.0",
 		"supertest": "^6.3.3",
+		"swagger-autogen": "^2.23.7",
+		"swagger-jsdoc": "^6.2.8",
+		"swagger-ui-express": "^5.0.0"
 		"typescript": "^5.3.2"
 	}
 }
