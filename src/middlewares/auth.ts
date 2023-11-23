@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { RequestHandler, Request, Response, NextFunction } from 'express';
 import jwt, { TokenExpiredError, JwtPayload } from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import config from '../config/index';
@@ -27,7 +27,7 @@ const extractToken = (req: Request): string | null => {
  * @param {string} next - Next function
  * @returns {object} - Returns user object
  */
-const authMiddleware = async (
+const authMiddleware: RequestHandler = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,

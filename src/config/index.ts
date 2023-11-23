@@ -19,10 +19,14 @@ const config = {
 			.JWT_VERIFY_EMAIL_EXPIRATION_MINUTES as string,
 	},
 	email: {
-		host: process.env.SMTP_HOST as string,
-		port: process.env.SMTP_PORT as string,
-		username: process.env.SMTP_USERNAME as string,
-		password: process.env.SMTP_PASSWORD as string,
+		smtp: {
+			host: process.env.SMTP_HOST as string,
+			port: process.env.SMTP_PORT as string,
+			auth: {
+				user: process.env.SMTP_USERNAME as string,
+				pass: process.env.SMTP_PASSWORD as string,
+			},
+		},
 		from: process.env.EMAIL_FROM as string,
 	},
 };
