@@ -21,6 +21,10 @@ const login = async (
 		throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
 	}
 
+	if (user.isVerified === false) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, 'Email not verified');
+	}
+
 	const tokens = await tokenService.generateAuthTokens(user);
 	user.refreshToken = tokens.refresh.token;
 	await user.save();
