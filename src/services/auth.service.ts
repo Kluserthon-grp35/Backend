@@ -18,8 +18,12 @@ const login = async (
 ): Promise<{ user: IUser; tokens: any }> => {
 	const user: IUser | null = await userService.getUserByEmail(email);
 
-	if (!user || !(await user.validatePassword(password))) {
-		throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+	if (!user) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email');
+	}
+
+	if (!(await user.validatePassword(password))) {
+		throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect password');
 	}
 
 	if (user.isVerified === false) {
