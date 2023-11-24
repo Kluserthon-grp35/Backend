@@ -78,7 +78,7 @@ const verifyToken = async (token: string, tokenType: string): Promise<any> => {
 		if (!payload) {
 			console.log('Failed to verify token');
 		}
-		
+
 		const tokenDoc = await Token.findOne({
 			token,
 			type: tokenType,
@@ -95,7 +95,6 @@ const verifyToken = async (token: string, tokenType: string): Promise<any> => {
 		throw error;
 	}
 };
-
 
 /**
  * @description Generate auth tokens from user object
@@ -154,20 +153,22 @@ const generateResetPasswordToken = async (email: string) => {
 		expires,
 		tokenTypes.RESET_PASSWORD,
 	);
-	
+
 	const userId = user._id;
-	
-	 
+
 	const createdToken = await Token.create({
 		token: resetPasswordToken,
 		user: userId,
 		type: tokenTypes.RESET_PASSWORD,
 		expires,
 	});
-	
-	  if (!createdToken) {
-		throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to create reset password token');
-	  }
+
+	if (!createdToken) {
+		throw new ApiError(
+			httpStatus.INTERNAL_SERVER_ERROR,
+			'Failed to create reset password token',
+		);
+	}
 
 	return resetPasswordToken;
 };

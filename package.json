@@ -14,7 +14,6 @@
 		"test": "jest --test --coverage",
 		"prepare": "husky install",
 		"swagger": "node ./src/swagger/swagger.ts"
-
 	},
 	"author": "",
 	"license": "ISC",

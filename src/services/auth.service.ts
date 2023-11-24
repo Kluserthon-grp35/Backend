@@ -55,7 +55,10 @@ const register = async (userBody: CreateUserBody): Promise<boolean> => {
  * @returns {Promise<IUser>} - Returns the verified user
  */
 const verifyEmail = async (token: string): Promise<IUser> => {
-	const tokenDoc = await tokenService.verifyToken(token, tokenTypes.VERIFY_EMAIL);
+	const tokenDoc = await tokenService.verifyToken(
+		token,
+		tokenTypes.VERIFY_EMAIL,
+	);
 	if (!tokenDoc) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
 	}
@@ -107,8 +110,11 @@ const resetPassword = async (
 	token: string,
 	newPassword: string,
 ): Promise<boolean> => {
-	console.log("token from service: ", token);
-	const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD);
+	console.log('token from service: ', token);
+	const tokenDoc = await tokenService.verifyToken(
+		token,
+		tokenTypes.RESET_PASSWORD,
+	);
 	if (!tokenDoc) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid token');
 	}
