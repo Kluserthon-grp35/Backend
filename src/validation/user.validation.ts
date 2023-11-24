@@ -10,7 +10,7 @@ const createClient = {
 		clientName: Joi.string().required(),
 		clientPhoneNumber: Joi.string().required(),
 		clientAddress: Joi.string().required(),
-	})
+	}),
 };
 
 /**

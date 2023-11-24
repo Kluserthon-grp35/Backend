@@ -8,9 +8,9 @@ export const clientRouter = Router();
 
 clientRouter.post(
 	'/create',
-    validate(userValidation.createClient),
-    authMiddleware,
-    userController.createClientUser,
+	validate(userValidation.createClient),
+	authMiddleware,
+	userController.createClientUser,
 );
 
 // clientRouter.post(
