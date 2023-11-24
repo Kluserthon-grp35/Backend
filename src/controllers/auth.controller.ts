@@ -51,8 +51,7 @@ const verifyEmailController = Asyncly(async (req, res) => {
 	res.status(httpStatus.OK).json({
 		status: httpStatus.OK,
 		success: true,
-		message: 'Email verified successfully',
-		data: user.toObject(),
+		message: 'Email verified successfully'
 	});
 });
 

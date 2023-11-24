@@ -54,7 +54,7 @@ const register = async (userBody: CreateUserBody): Promise<boolean> => {
  * @param {string} token - The email verification token
  * @returns {Promise<IUser>} - Returns the verified user
  */
-const verifyEmail = async (token: string): Promise<IUser> => {
+const verifyEmail = async (token: string): Promise<boolean> => {
 	const tokenDoc = await tokenService.verifyToken(
 		token,
 		tokenTypes.VERIFY_EMAIL,
@@ -78,7 +78,7 @@ const verifyEmail = async (token: string): Promise<IUser> => {
 	tokenDoc.blacklisted = true;
 	await tokenDoc.save();
 
-	return user;
+	return true;
 };
 
 /**

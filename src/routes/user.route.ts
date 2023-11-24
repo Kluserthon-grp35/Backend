@@ -13,26 +13,3 @@ clientRouter.post(
 	userController.createClientUser,
 );
 
-// clientRouter.post(
-// 	'/login',
-// 	validate(authValidation.login),
-// 	authController.signin,
-// );
-
-// clientRouter.get(
-// 	'/verify',
-// 	validate(authValidation.verifyEmail),
-// 	authController.verifyEmailController,
-// );
-
-// clientRouter.post(
-// 	'/forgot-password',
-// 	validate(authValidation.forgotPassword),
-// 	authController.forgotPasswordController,
-// );
-
-// clientRouter.post(
-// 	'/reset-password',
-// 	validate(authValidation.resetPassword),
-// 	authController.resetPasswordController,
-// );

@@ -12,7 +12,6 @@ import config from './config/index';
 import morgan from './config/morgan';
 import ApiRouter from './routes/index';
 
-
 const app = express();
 
 app.use(logger('dev'));

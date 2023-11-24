@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-import AutoIncrement from 'mongoose-sequence';
 
 
 export interface IClient extends Document {
@@ -14,7 +13,8 @@ export interface IClient extends Document {
 
 export interface CreateClientBody {
 	businessOwnerId: string;
-	clientName: string;
+	firstName: string;
+	lastName: string;
 	clientEmail: string;
 	clientPhoneNumber: string;
 	clientAddress: string;
@@ -58,14 +58,12 @@ const clientSchema = new Schema<IClient>({
 	},
 	noOfInvoice: {
 		type: Number,
-		unique: true, 
+		default: 0,
 	},
 	createdAt: {
 		type: Date,
 		default: Date.now,
 	},
 });
-
-clientSchema.plugin(AutoIncrement, { inc_field: 'noOfInvoice' });
 
 export const Client = mongoose.model<IClient>('Client', clientSchema);
