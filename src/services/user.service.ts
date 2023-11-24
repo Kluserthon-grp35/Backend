@@ -79,7 +79,7 @@ const createClient = async (body: CreateClientBody): Promise<IClient> => {
 	}
 
 	return client;
-}
+};
 
 /**
  * @description Get a client by id
