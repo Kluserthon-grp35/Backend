@@ -11,8 +11,6 @@ type SchemaObject = {
 	body?: Joi.ObjectSchema;
 };
 
-const schemaFields = ['params', 'query', 'body', 'file', 'files'];
-
 export default function validate(schema: SchemaObject) {
 	return (
 		req: express.Request,

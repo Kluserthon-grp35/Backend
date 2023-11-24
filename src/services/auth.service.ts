@@ -110,6 +110,7 @@ const resetPassword = async (
 	token: string,
 	newPassword: string,
 ): Promise<boolean> => {
+	console.log('token from service: ', token);
 	const tokenDoc = await tokenService.verifyToken(
 		token,
 		tokenTypes.RESET_PASSWORD,

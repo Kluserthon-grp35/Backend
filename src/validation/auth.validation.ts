@@ -7,11 +7,18 @@ import { passwordHelper } from './custom.validation';
 const register = {
 	body: Joi.object().keys({
 		businessName: Joi.string().required(),
+		firstName: Joi.string().required(),
+		lastName: Joi.string().required(),
 		email: Joi.string().required().email(),
-		username: Joi.string().required(),
 		password: Joi.string().required().custom(passwordHelper),
+		phoneNumber: Joi.string().required(),
+		businessDescription: Joi.string().required(),
 		instagramHandle: Joi.string(),
-		description: Joi.string(),
+		country: Joi.string(),
+		state: Joi.string(),
+		city: Joi.string(),
+		zipCode: Joi.string(),
+		address: Joi.string(),
 	}),
 };
 
@@ -22,15 +29,6 @@ const login = {
 	body: Joi.object().keys({
 		email: Joi.string().required(),
 		password: Joi.string().required(),
-	}),
-};
-
-/**
- * @description Validation schema for user logout.
- */
-const logout = {
-	body: Joi.object().keys({
-		refreshToken: Joi.string().required(),
 	}),
 };
 
@@ -77,7 +75,6 @@ const verifyEmail = {
 export const authValidation = {
 	register,
 	login,
-	logout,
 	refreshTokens,
 	forgotPassword,
 	resetPassword,

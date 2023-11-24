@@ -48,7 +48,7 @@ const getUserById = async (userId: string): Promise<IUser> => {
 
 /**
  * @description Get a user by email
- * @param {string} Email - The user email to get the user  from
+ * @param {string} email - The user email to get the user  from
  * @returns {Promise<object>} Returns a promise that resolves when the user is found
  */
 const getUserByEmail = async (email: string): Promise<IUser> => {

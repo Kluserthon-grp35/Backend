@@ -6,13 +6,12 @@
 	"scripts": {
 		"compile": "tsc -p .",
 		"start": "node dist/bin/www.js",
-		"dev": "npm run swagger && nodemon src/bin/www.ts ",
+		"dev": "nodemon src/bin/www.ts ",
 		"build": "tsc -p .",
 		"format": "prettier --write .",
 		"lint": "eslint . --fix",
 		"lint-format": "npm run lint && npm run format",
 		"test": "jest --test --coverage",
-		"swagger": "ts-node ./src/swagger/swagger.ts"
 	},
 	"author": "",
 	"license": "ISC",

@@ -1,5 +1,6 @@
 import express from 'express';
 import { authRouter } from './auth.route';
+import { clientRouter } from './user.route';
 
 const router = express.Router();
 
@@ -10,6 +11,10 @@ const defaultRoutes: {
 	{
 		path: '/auth',
 		route: authRouter,
+	},
+	{
+		path: '/user',
+		route: clientRouter,
 	},
 ];
 
