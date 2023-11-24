@@ -1,14 +1,16 @@
 import Joi from 'joi';
-import { objectId, passwordHelper } from './custom.validation';
+import { objectId } from './custom.validation';
 
 /**
  * @description Validation schema for client profile creation.
  */
 const createClient = {
-	clientEmail: Joi.string().required().email(),
-	clientName: Joi.string().required(),
-	clientPhoneNumber: Joi.string().required(),
-	clientAddress: Joi.string().required(),
+	body: Joi.object().keys({
+		clientEmail: Joi.string().required().email(),
+		clientName: Joi.string().required(),
+		clientPhoneNumber: Joi.string().required(),
+		clientAddress: Joi.string().required(),
+	})
 };
 
 /**
@@ -31,7 +33,6 @@ const updateUser = {
 		.keys({
 			businessName: Joi.string().email(),
 			email: Joi.string(),
-			username: Joi.string(),
 			instagramHandle: Joi.string(),
 			description: Joi.string(),
 		})

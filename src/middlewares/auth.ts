@@ -42,13 +42,16 @@ const authMiddleware: RequestHandler = async (
 		const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload & {
 			sub: string;
 		};
+		if (!decoded) {
+			return next(new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token'));
+		}
 		const user: IUser | null = await User.findById(decoded.sub);
 
 		if (!user) {
 			return next(new ApiError(httpStatus.UNAUTHORIZED, 'User not found'));
 		}
 
-		req.user = user;
+		req.user = user._id;
 		next();
 	} catch (error) {
 		if (error instanceof TokenExpiredError) {
