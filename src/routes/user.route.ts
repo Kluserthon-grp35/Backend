@@ -12,4 +12,3 @@ clientRouter.post(
 	authMiddleware,
 	userController.createClientUser,
 );
-

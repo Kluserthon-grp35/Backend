@@ -61,23 +61,23 @@ const getUserByEmail = async (email: string): Promise<IUser> => {
 	return user;
 };
 
-const createClient = async (body: CreateClientBody): Promise<IClient> => {
-	const clientName = `${body.firstName} ${body.lastName}`;
+// const createClient = async (body: CreateClientBody): Promise<IClient> => {
+// 	// const clientName = `${body.firstName} ${body.lastName}`;
 
-	const clientBody = {
-		...body,
-		clientName,
-	};
-	}
+// 	// const clientBody = {
+// 	// 	...body,
+// 	// 	clientName,
+// 	// };
+// 	// }
 
-	const client = await Client.create({ ...body });
+// 	// const client = await Client.create({ ...body });
 
-	if (!client) {
-		throw new ApiError(httpStatus.BAD_REQUEST, 'Client not created');
-	}
+// 	// if (!client) {
+// 	// 	throw new ApiError(httpStatus.BAD_REQUEST, 'Client not created');
+// 	// }
 
-	return client;
-}
+// 	// return client;
+// }
 
 /**
  * @description Get a client by id
