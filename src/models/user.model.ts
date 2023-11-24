@@ -4,11 +4,18 @@ import { logger } from '../config/logger';
 
 export interface IUser extends Document {
 	businessName: string;
-	username: string;
+	firstName: string;
+	lastName: string;
 	email: string;
 	password: string;
-	description: string;
+	phoneNumber: string;
+	businessDescription: string;
 	instagram: string;
+	country: string;
+	state: string;
+	city: string;
+	zipCode: string;
+	address: string;
 	isVerified: boolean;
 	refreshToken?: string;
 	validatePassword(userPassword: string): Promise<boolean>;
@@ -16,10 +23,17 @@ export interface IUser extends Document {
 
 export interface CreateUserBody {
 	businessName: string;
-	username: string;
+	firstName: string;
+	lastName: string;
 	email: string;
 	password: string;
-	description?: string;
+	phoneNumber: string;
+	businessDescription: string;
+	country?: string;
+	state?: string;
+	city?: string;
+	zipCode?: string;
+	address?: string;
 	instagram?: string;
 	isVerified?: boolean;
 }
@@ -32,11 +46,15 @@ const userSchema = new Schema<IUser>(
 			trim: true,
 			unique: true,
 		},
-		username: {
+		firstName: {
 			type: String,
 			required: true,
 			trim: true,
-			unique: true,
+		},
+		lastName: {
+			type: String,
+			required: true,
+			trim: true,
 		},
 		email: {
 			type: String,
@@ -49,11 +67,37 @@ const userSchema = new Schema<IUser>(
 			required: true,
 			trim: true,
 		},
-		description: {
+		phoneNumber: {
+			type: String,
+			required: true,
+			trim: true,
+		},
+		businessDescription: {
+			type: String,
+			trim: true,
+			required: true,
+		},
+		instagram: {
 			type: String,
 			trim: true,
 		},
-		instagram: {
+		country: {
+			type: String,
+			trim: true,
+		},
+		state: {
+			type: String,
+			trim: true,
+		},
+		city: {
+			type: String,
+			trim: true,
+		},
+		zipCode: {
+			type: String,
+			trim: true,
+		},
+		address: {
 			type: String,
 			trim: true,
 		},
