@@ -11,7 +11,7 @@ import { authLimiter } from './middlewares/rateLimiter';
 import config from './config/index';
 import morgan from './config/morgan';
 import ApiRouter from './routes/index';
-import swaggerUi from 'swagger-ui-express';
+
 
 const app = express();
 
