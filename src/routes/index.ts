@@ -1,6 +1,7 @@
 import express from 'express';
 import { authRouter } from './auth.route';
 import { clientRouter } from './user.route';
+import { invoiceRouter } from './invoice.route';
 
 const router = express.Router();
 
@@ -15,6 +16,10 @@ const defaultRoutes: {
 	{
 		path: '/user',
 		route: clientRouter,
+	},
+	{
+		path: '/invoice',
+		route: invoiceRouter,
 	},
 ];
 

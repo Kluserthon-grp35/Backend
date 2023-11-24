@@ -61,9 +61,24 @@ const getUserByEmail = async (email: string): Promise<IUser> => {
 	return user;
 };
 
+/**
+ * @description Get a client by email
+ * @param {string} clientEmail - The client email to get the client  from
+ * @returns {Promise<object>} Returns a promise that resolves when the client is found
+ */
+const getClientByEmail = async (clientEmail: string): Promise<IClient> => {
+	const client = await Client.findOne({ clientEmail });
+
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+	}
+
+	return client;
+};
+
 const createClient = async (body: CreateClientBody): Promise<IClient> => {
 	const clientName = `${body.firstName} ${body.lastName}`;
-
+	
 	const clientBody = {
 		clientName,
 		businessOwnerId: body.businessOwnerId,
@@ -94,20 +109,6 @@ const getClientById = async (clientId: string): Promise<IClient> => {
 	return client;
 };
 
-/**
- * @description Get a client by email
- * @param {string} clientEmail - The client email to get the client  from
- * @returns {Promise<object>} Returns a promise that resolves when the client is found
- */
-const getClientByEmail = async (clientEmail: string): Promise<IClient> => {
-	const client = await Client.findOne({ clientEmail });
-
-	if (!client) {
-		throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-	}
-
-	return client;
-};
 
 /**
  * @description Update a user by id

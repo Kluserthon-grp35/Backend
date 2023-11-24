@@ -7,7 +7,8 @@ import { objectId } from './custom.validation';
 const createClient = {
 	body: Joi.object().keys({
 		clientEmail: Joi.string().required().email(),
-		clientName: Joi.string().required(),
+		firstName: Joi.string().required(),
+		lastName: Joi.string().required(),
 		clientPhoneNumber: Joi.string().required(),
 		clientAddress: Joi.string().required(),
 	}),

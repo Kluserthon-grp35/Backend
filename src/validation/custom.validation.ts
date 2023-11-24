@@ -7,9 +7,9 @@ import { CustomHelpers } from 'joi';
  * @param helpers - The Joi helpers for error messages.
  * @returns The validated ObjectId if valid.
  */
-export const objectId = (value: string, helpers: CustomHelpers): string => {
+export const objectId = (value: string): string => {
 	if (!mongoose.isValidObjectId(value)) {
-		return helpers.error('any.invalid', { message: 'Invalid ID' }).message;
+		return 'Invalid ObjectId';
 	}
 	return value;
 };

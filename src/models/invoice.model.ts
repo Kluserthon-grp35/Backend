@@ -1,6 +1,4 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcrypt';
-import { logger } from '../config/logger';
 import { invoiceStatusTypes } from '../config/invoiceStatusType';
 
 export interface IInvoice extends Document {
@@ -15,13 +13,7 @@ export interface IInvoice extends Document {
 }
 
 export interface CreateInvoiceBody {
-	clientId: mongoose.Types.ObjectId;
 	amount: Number;
-	dueDate: Date;
-	isPaid: boolean;
-	status: string;
-	createdAt: Date;
-	paymentAttempts: Number;
 }
 
 const invoiceSchema = new Schema<IInvoice>(
@@ -41,6 +33,7 @@ const invoiceSchema = new Schema<IInvoice>(
 		},
 		dueDate: {
 			type: Date,
+			deafult: Date.now(),
 		},
 		isPaid: {
 			type: Boolean,
@@ -53,6 +46,7 @@ const invoiceSchema = new Schema<IInvoice>(
 				invoiceStatusTypes.PAID,
 				invoiceStatusTypes.PENDING,
 			],
+			default: invoiceStatusTypes.PENDING,
 		},
 		createdAt: {
 			type: Date,
@@ -63,7 +57,7 @@ const invoiceSchema = new Schema<IInvoice>(
 			default: 0,
 		},
 	},
-	{ timestamps: true, collection: 'user' },
+	{ timestamps: true, collection: 'invoice' },
 );
 
 export const Invoice = mongoose.model<IInvoice>('Invoice', invoiceSchema);

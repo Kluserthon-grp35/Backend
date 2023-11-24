@@ -39,9 +39,7 @@ const getInvoiceById = Asyncly(async (req, res) => {
 	});
 });
 
-const queryInvoices = Asyncly(async (req, res) => {
-	const { clientName, status, isPaid, dueDate } = req.query;
-});
+
 
 const updateInvoice = Asyncly(async (req, res) => {
 	const invoiceId = req.params?.id as string;
@@ -60,13 +58,7 @@ const updateInvoice = Asyncly(async (req, res) => {
 });
 
 const getAllInvoices = Asyncly(async (req, res) => {
-	// const invoices = await invoiceService.getAllInvoices()
-
-	// if (!invoices) {
-	//     throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client')
-	// }
-
-	const invoices = await Invoice.find();
+	const invoices = await invoiceService.getAll();
 	if (!invoices) {
 		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
 	}
@@ -94,20 +86,7 @@ const getInvoiceCount = Asyncly(async (req, res) => {
 	});
 });
 
-const markInvoiceOverdue = Asyncly(async (req, res) => {
-	const invoiceId = req.params?.id as string;
-	const invoice = await invoiceService.markInvoiceOverdue(invoiceId);
 
-	if (!invoice) {
-		throw new ApiError(httpStatus.NOT_FOUND, 'Invoice not found');
-	}
-	res.status(httpStatus.OK).json({
-		status: httpStatus.OK,
-		success: true,
-		message: 'Invoice marked overdue',
-		data: invoice,
-	});
-});
 
 const markInvoicePaid = Asyncly(async (req, res) => {
 	const invoiceId = req.params?.id as string;
@@ -136,3 +115,18 @@ const deleteInvoiceById = Asyncly(async (req, res) => {
 		message: 'Invoice deleted successfully',
 	});
 });
+
+
+
+
+
+export const invoiceController = {
+	createInvoice,
+	getInvoiceById,
+	updateInvoice,
+	getAllInvoices,
+	getInvoiceCount,
+	// markInvoiceOverdue,
+	markInvoicePaid,
+	deleteInvoiceById,
+};
