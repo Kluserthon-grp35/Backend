@@ -4,7 +4,9 @@ import { invoiceStatusTypes } from '../config/invoiceStatusType';
 export interface IInvoice extends Document {
 	invoiceId: string;
 	clientId: mongoose.Types.ObjectId;
+	product: string;
 	amount: Number;
+	quantity: Number;
 	dueDate: Date;
 	isPaid: boolean;
 	status: string;
@@ -13,7 +15,9 @@ export interface IInvoice extends Document {
 }
 
 export interface CreateInvoiceBody {
+	product: string;
 	amount: Number;
+	quantity: Number;
 }
 
 const invoiceSchema = new Schema<IInvoice>(
@@ -27,7 +31,15 @@ const invoiceSchema = new Schema<IInvoice>(
 			type: String,
 			required: true,
 		},
+		product: {
+			type: String,
+			required: true,
+		},
 		amount: {
+			type: Number,
+			required: true,
+		},
+		quantity: {
 			type: Number,
 			required: true,
 		},

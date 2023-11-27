@@ -4,30 +4,28 @@ import { Client, IClient } from '../models/index';
 import ApiError from '../utils/ApiError';
 import { logger } from '../config/logger';
 import { invoiceStatusTypes } from '../config/invoiceStatusType';
-import { Invoice, CreateInvoiceBody, IInvoice, User } from '../models/index';
+import { Invoice, CreateInvoiceBody, IInvoice } from '../models/index';
 
-const createInvoice = async (
-	body: CreateInvoiceBody,
-): Promise<IInvoice> => {
-
-    const client: IClient | null = await Client.findOne().sort({ createdAt: -1 });
+const createInvoice = async (body: CreateInvoiceBody): Promise<IInvoice> => {
+	const client: IClient | null = await Client.findOne().sort({ createdAt: -1 });
 
 	if (!client) {
-		throw new ApiError(httpStatus.NOT_FOUND, 'Recently created client not found');
+		throw new ApiError(
+			httpStatus.NOT_FOUND,
+			'Recently created client not found',
+		);
 	}
 
-	
-    const clientId = client._id;
+	const clientId = client._id;
 
 	if (!mongoose.isValidObjectId(clientId)) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid client ID');
 	}
-	
 
 	const noOfInvoice = client.noOfInvoice + 1;
-  
+
 	// Generate the invoice id in the specified format
-	const formattedNoOfInvoice = String(noOfInvoice).padStart(3, '0'); 
+	const formattedNoOfInvoice = String(noOfInvoice).padStart(3, '0');
 	const invoiceId = `PZ-0${formattedNoOfInvoice}`;
 
 	const invoiceBody = {
@@ -43,7 +41,11 @@ const createInvoice = async (
 	}
 
 	// Update the noOfInvoice field of the client
-	await Client.findByIdAndUpdate(invoiceBody.clientId, { noOfInvoice: noOfInvoice }, { new: true });
+	await Client.findByIdAndUpdate(
+		invoiceBody.clientId,
+		{ noOfInvoice: noOfInvoice },
+		{ new: true },
+	);
 
 	return createdInvoice;
 };
@@ -103,9 +105,7 @@ const getClientInvoices = async (clientId: string): Promise<IInvoice[]> => {
 };
 
 // Get all paid invoice by a client
-const getClientPaidInvoices = async (
-	clientId: string,
-): Promise<IInvoice[]> => {
+const getClientPaidInvoices = async (clientId: string): Promise<IInvoice[]> => {
 	const invoices = await Invoice.find({
 		clientId,
 		status: invoiceStatusTypes.PAID,
@@ -150,7 +150,6 @@ const getClientOverdueInvoices = async (
 	return invoices;
 };
 
-
 const updateInvoiceById = async (
 	invoiceId: string,
 	update: Partial<CreateInvoiceBody> | CreateInvoiceBody,
@@ -185,11 +184,13 @@ const getInvoiceCount = async (): Promise<number> => {
 const deleteInvoiceById = async (
 	invoiceId: string,
 ): Promise<IInvoice | null> => {
-	const invoice = await Invoice.findByIdAndDelete(invoiceId);
+	const invoice = await Invoice.findOne({ invoiceId: invoiceId });
 
 	if (!invoice) {
 		throw new ApiError(httpStatus.NOT_FOUND, 'Invoice not found');
 	}
+
+	await invoice.deleteOne();
 
 	logger.info('Invoice deleted successfully');
 	return invoice;
@@ -208,35 +209,35 @@ const markInvoicePaid = async (invoiceId: string): Promise<IInvoice> => {
 	return invoice;
 };
 
-
 const markOverdueInvoices = async (): Promise<void> => {
 	const currentDate = new Date();
 	const overdueInvoices = await Invoice.find({
-	  status: invoiceStatusTypes.PENDING,
-	  dueDate: { $lt: currentDate },
+		status: invoiceStatusTypes.PENDING,
+		dueDate: { $lt: currentDate },
 	});
-  
+
 	if (overdueInvoices && overdueInvoices.length > 0) {
-	  // Update the status of overdue invoices
-	  await Invoice.updateMany(
-		{ _id: { $in: overdueInvoices.map((invoice) => invoice._id) } },
-		{ status: invoiceStatusTypes.OVERDUE }
-	  );
+		// Update the status of overdue invoices
+		await Invoice.updateMany(
+			{ _id: { $in: overdueInvoices.map((invoice) => invoice._id) } },
+			{ status: invoiceStatusTypes.OVERDUE },
+		);
 	}
-  };
+};
 
+const getDueInvoices = async (): Promise<IInvoice[]> => {
+	const currentDate = new Date();
+	const dueInvoices = await Invoice.find({
+		status: invoiceStatusTypes.PENDING,
+		dueDate: { $gte: currentDate },
+	});
 
+	if (!dueInvoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No due invoices found');
+	}
 
-// getInvoiceById,
-// getPaidInvoices,
-// getUnpaidInvoices,
-// getOverdueInvoices,
-// getClientPaidInvoices,
-// getClientUnpaidInvoices,
-// getClientOverdueInvoices,
-// getClientInvoices,
-
-
+	return dueInvoices;
+};
 
 export const invoiceService = {
 	createInvoice,
@@ -254,4 +255,5 @@ export const invoiceService = {
 	markOverdueInvoices,
 	markInvoicePaid,
 	getClientInvoices,
+	getDueInvoices,
 };

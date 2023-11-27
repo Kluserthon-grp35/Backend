@@ -1,6 +1,7 @@
 import nodemailer, { TransportOptions } from 'nodemailer';
 import { logger } from '../config/logger';
 import config from '../config/index';
+import { generateEmailTemplate } from '../utils/email-template/sendVerification';
 
 const transport = nodemailer.createTransport(
 	config.email.smtp as TransportOptions,
@@ -56,15 +57,35 @@ const sendResetPasswordEmail = async (
  * @param {string} token - The email verification token
  * @returns {Promise<boolean>} Promise resolved when the email is sent
  */
+// const sendVerificationEmail = async (
+// 	to: string,
+// 	token: string,
+// ): Promise<boolean> => {
+// 	const subject = 'Verify Email';
+// 	// Ensure the change the baseurl to that of the frontend here
+// 	const verifyEmailUrl = `https://payzen.onrender.com/api/v1/auth/verify?token=${token}`;
+// 	const text = `Dear Customer. To verify your email, please click on this link\n${verifyEmailUrl}\nIf you did not create an account, please ignore this link.`;
+// 	await sendMail(to, subject, text);
+// 	return true;
+// };
+
+/**
+ * @description Send an email to verify the user's email address
+ * @param {string} to - The email address of the recipient
+ * @param {string} token - The email verification token
+ * @returns {Promise<boolean>} Promise resolved when the email is sent
+ */
 const sendVerificationEmail = async (
 	to: string,
 	token: string,
-): Promise<boolean> => {
+  ): Promise<boolean> => {
+	// Generate the email template with the provided token
+	const emailBody = generateEmailTemplate(token);
+  
+	// Assuming you have a function to send emails, update this part accordingly
 	const subject = 'Verify Email';
-	// Ensure the change the baseurl to that of the frontend here
-	const verifyEmailUrl = `https://payzen.onrender.com/api/v1/auth/verify?token=${token}`;
-	const text = `Dear Customer. To verify your email, please click on this link\n${verifyEmailUrl}\nIf you did not create an account, please ignore this link.`;
-	await sendMail(to, subject, text);
+	await sendMail(to, subject, emailBody); // Update this line with your email sending logic
+  
 	return true;
 };
 

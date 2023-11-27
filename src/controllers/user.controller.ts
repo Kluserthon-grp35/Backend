@@ -15,10 +15,11 @@ const createClientUser = Asyncly(async (req, res) => {
 		businessOwnerId: req.user,
 		...req.body,
 	};
-	const existingClient = await Client.findOne({ email: clientBody.clientEmail });
+	const existingClient = await Client.findOne({
+		email: clientBody.clientEmail,
+	});
 
-  
-  	const client = await userService.createClient(clientBody);
+	const client = await userService.createClient(clientBody);
 
 	// If the client is null, it means there was an issue creating the client
 	if (client === null) {
@@ -28,11 +29,9 @@ const createClientUser = Asyncly(async (req, res) => {
 			message: 'Failed to create client',
 		});
 	}
-	
-	if (client) {
 
+	if (client) {
 		if (client === existingClient) {
-			
 			return res.status(httpStatus.OK).json({
 				status: httpStatus.OK,
 				success: true,
@@ -47,7 +46,6 @@ const createClientUser = Asyncly(async (req, res) => {
 			message: 'Client created successfully',
 		});
 	}
-
 });
 
 const getClientUsingId = Asyncly(async (req, res) => {

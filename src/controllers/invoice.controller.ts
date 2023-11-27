@@ -39,8 +39,6 @@ const getInvoiceById = Asyncly(async (req, res) => {
 	});
 });
 
-
-
 const updateInvoice = Asyncly(async (req, res) => {
 	const invoiceId = req.params?.id as string;
 	const invoice = await invoiceService.updateInvoiceById(invoiceId, req.body);
@@ -86,8 +84,6 @@ const getInvoiceCount = Asyncly(async (req, res) => {
 	});
 });
 
-
-
 const markInvoicePaid = Asyncly(async (req, res) => {
 	const invoiceId = req.params?.id as string;
 	const invoice = await invoiceService.markInvoicePaid(invoiceId);
@@ -104,7 +100,7 @@ const markInvoicePaid = Asyncly(async (req, res) => {
 });
 
 const deleteInvoiceById = Asyncly(async (req, res) => {
-	const invoiceId = req.params?.invoiceId as string;
+	const invoiceId = req.params.invoiceId as string;
 	const invoice = await invoiceService.deleteInvoiceById(invoiceId);
 	if (!invoice) {
 		throw new ApiError(httpStatus.NOT_FOUND, 'Invoice not found');
@@ -116,7 +112,113 @@ const deleteInvoiceById = Asyncly(async (req, res) => {
 	});
 });
 
+const getPaidInvoicesController = Asyncly(async (req, res) => {
+	const invoices = await invoiceService.getPaidInvoices();
 
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+});
+
+const getUnpaidInvoicesController = Asyncly(async (req, res) => {
+	const invoices = await invoiceService.getUnpaidInvoices();
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+})
+
+const getOverdueInvoicesController = Asyncly(async (req, res) => {
+	const invoices = await invoiceService.getOverdueInvoices();
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+})
+
+const getClientInvoicesController = Asyncly(async (req, res) => {
+	const clientId = req.params?.clientId as string;
+	const invoices = await invoiceService.getClientInvoices(clientId);
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+});
+
+const getClientPaidInvoicesController = Asyncly(async (req, res) => {
+	const clientId = req.params?.clientId as string;
+	const invoices = await invoiceService.getClientPaidInvoices(clientId);
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+});
+
+const getClientUnpaidInvoicesController = Asyncly(async (req, res) => {
+	const clientId = req.params?.clientId as string;
+	const invoices = await invoiceService.getClientUnpaidInvoices(clientId);
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+});
+
+const getDueInvoicesController = Asyncly(async (req, res) => {
+	const invoices = await invoiceService.getDueInvoices();
+
+	if (!invoices) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'No invoices found for client');
+	}
+
+	res.status(httpStatus.OK).json({
+		status: httpStatus.OK,
+		success: true,
+		message: 'Invoices retrieved successfully',
+		data: invoices,
+	});
+});
 
 
 
@@ -126,7 +228,13 @@ export const invoiceController = {
 	updateInvoice,
 	getAllInvoices,
 	getInvoiceCount,
-	// markInvoiceOverdue,
 	markInvoicePaid,
 	deleteInvoiceById,
+	getPaidInvoicesController,
+	getUnpaidInvoicesController,
+	getOverdueInvoicesController,
+	getClientInvoicesController,
+	getClientPaidInvoicesController,
+	getClientUnpaidInvoicesController,
+	getDueInvoicesController,
 };

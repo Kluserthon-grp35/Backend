@@ -109,7 +109,6 @@ const getClientById = async (clientId: string): Promise<IClient> => {
 	return client;
 };
 
-
 /**
  * @description Update a user by id
  * @param {string} clientId - The user id to update
