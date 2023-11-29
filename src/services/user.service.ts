@@ -3,6 +3,7 @@ import { User, CreateUserBody, IUser } from '../models/index';
 import { Client, CreateClientBody, IClient } from '../models/index';
 import ApiError from '../utils/ApiError';
 import { logger } from '../config/logger';
+import { convertNumberToNigerianFormat } from '../utils/helper';
 
 /**
  * @description Check if the user email is already taken
@@ -23,8 +24,13 @@ const createUser = async (userBody: CreateUserBody): Promise<IUser> => {
 	if (await isEmailTaken(userBody.email)) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
 	}
+	// const phoneNumber = await convertNumberToNigerianFormat(userBody.phoneNumber);
 
-	const user = await User.create(userBody);
+	const body = {
+		...userBody,
+		// phoneNumber: phoneNumber
+	};
+	const user = await User.create(body);
 
 	if (!user) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'User not created');
@@ -78,7 +84,8 @@ const getClientByEmail = async (clientEmail: string): Promise<IClient> => {
 
 const createClient = async (body: CreateClientBody): Promise<IClient> => {
 	const clientName = `${body.firstName} ${body.lastName}`;
-	
+	// const clientPhoneNumber = convertNumberToNigerianFormat(body.clientPhoneNumber);
+
 	const clientBody = {
 		clientName,
 		businessOwnerId: body.businessOwnerId,

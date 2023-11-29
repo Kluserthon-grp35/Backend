@@ -1,5 +1,25 @@
 import mongoose from 'mongoose';
 import { CustomHelpers } from 'joi';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+
+const phoneUtil = PhoneNumberUtil.getInstance();
+
+/**
+ * @description Validate if the provided value is a valid Nigerian phone number.
+ * @param {string} value The phone number to be validated.
+ * @returns {Promise<boolean>} Promise resolved with the validation result.
+ */
+export const checkNumber = async (
+	contact: string,
+	helpers: CustomHelpers,
+): Promise<any> => {
+	const number = phoneUtil.parseAndKeepRawInput(contact, 'NG');
+	if (!phoneUtil.isValidNumberForRegion(number, 'NG')) {
+		return helpers.error(`Invalid number`).message;
+	}
+
+	return contact;
+};
 
 /**
  * @description Validate if the provided value is a valid MongoDB ObjectId.

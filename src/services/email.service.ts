@@ -2,6 +2,7 @@ import nodemailer, { TransportOptions } from 'nodemailer';
 import { logger } from '../config/logger';
 import config from '../config/index';
 import { generateEmailTemplate } from '../utils/email-template/sendVerification';
+import { generateInvoiceEmailTemplate } from '../utils/email-template/sendInvoiceEmail';
 
 const transport = nodemailer.createTransport(
 	config.email.smtp as TransportOptions,
@@ -15,6 +16,27 @@ if (config.env !== 'test') {
 				'Unable to connect to email server. Make sure you have configured the SMTP options in .env',
 			),
 		);
+}
+
+interface InvoiceItem {
+	clientId: string;
+	productName: string;
+	amount: number;
+	quantity: number;
+}
+
+export interface Invoice {
+	invoiceId: string;
+	invoiceDate: string;
+	clientName: string;
+	address: string;
+	date: string;
+	greeting: string;
+	products: InvoiceItem[];
+	subtotal: number;
+	vat: number;
+	grandTotal: number;
+	paymentLink: string;
 }
 
 /**
@@ -44,7 +66,6 @@ const sendResetPasswordEmail = async (
 	token: string,
 ): Promise<boolean> => {
 	const subject = 'Reset Password';
-	// Ensure the change the baseurl to that of the frontend here
 	const resetPasswordUrl = `${config.baseUrl}/api/v1/auth/reset-password?token=${token}`;
 	const text = `Dear Customer. To reset your password, please click on this link:\n${resetPasswordUrl}`;
 	await sendMail(to, subject, text);
@@ -57,17 +78,6 @@ const sendResetPasswordEmail = async (
  * @param {string} token - The email verification token
  * @returns {Promise<boolean>} Promise resolved when the email is sent
  */
-// const sendVerificationEmail = async (
-// 	to: string,
-// 	token: string,
-// ): Promise<boolean> => {
-// 	const subject = 'Verify Email';
-// 	// Ensure the change the baseurl to that of the frontend here
-// 	const verifyEmailUrl = `https://payzen.onrender.com/api/v1/auth/verify?token=${token}`;
-// 	const text = `Dear Customer. To verify your email, please click on this link\n${verifyEmailUrl}\nIf you did not create an account, please ignore this link.`;
-// 	await sendMail(to, subject, text);
-// 	return true;
-// };
 
 /**
  * @description Send an email to verify the user's email address
@@ -78,14 +88,33 @@ const sendResetPasswordEmail = async (
 const sendVerificationEmail = async (
 	to: string,
 	token: string,
-  ): Promise<boolean> => {
+): Promise<boolean> => {
 	// Generate the email template with the provided token
 	const emailBody = generateEmailTemplate(token);
-  
+
 	// Assuming you have a function to send emails, update this part accordingly
 	const subject = 'Verify Email';
 	await sendMail(to, subject, emailBody); // Update this line with your email sending logic
-  
+
+	return true;
+};
+
+/**
+ * @description Send an invoice to the specified email address
+ * @param {string} to - The email address of the recipient
+ * @param {string} subject - The subject of the email
+ * @param {InvoiceData} invoiceData - The invoice data
+ * @returns {Promise<boolean>} Promise resolved when the email is sent
+ */
+export const sendInvoice = async (
+	to: string,
+	invoiceData: Invoice,
+): Promise<boolean> => {
+	const subject = 'Invoice from Payzen';
+	const emailBody = generateInvoiceEmailTemplate(invoiceData);
+	// Use your email service to send the email
+	await sendMail(to, subject, emailBody);
+
 	return true;
 };
 
@@ -93,4 +122,5 @@ export const emailService = {
 	sendMail,
 	sendResetPasswordEmail,
 	sendVerificationEmail,
+	sendInvoice,
 };

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { passwordHelper } from './custom.validation';
+import { passwordHelper, checkNumber } from './custom.validation';
 
 /**
  * @description Validation schema for user registration.

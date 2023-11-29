@@ -6,8 +6,14 @@ import { objectId } from './custom.validation';
  */
 const createInvoice = {
 	body: Joi.object().keys({
-		amount: Joi.number().required(),
-		dueDate: Joi.date(),
+		products: Joi.array().items(
+			Joi.object().keys({
+				productName: Joi.string().required(),
+				amount: Joi.number().required(),
+				quantity: Joi.number().required(),
+			}),
+		),
+		clientId: Joi.string().required(),
 	}),
 };
 

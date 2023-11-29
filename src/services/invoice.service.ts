@@ -1,25 +1,20 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import { Client, IClient } from '../models/index';
+import { Client } from '../models/index';
 import ApiError from '../utils/ApiError';
 import { logger } from '../config/logger';
 import { invoiceStatusTypes } from '../config/invoiceStatusType';
 import { Invoice, CreateInvoiceBody, IInvoice } from '../models/index';
 
-const createInvoice = async (body: CreateInvoiceBody): Promise<IInvoice> => {
-	const client: IClient | null = await Client.findOne().sort({ createdAt: -1 });
-
-	if (!client) {
-		throw new ApiError(
-			httpStatus.NOT_FOUND,
-			'Recently created client not found',
-		);
+const createInvoice = async (dto: CreateInvoiceBody): Promise<IInvoice> => {
+	if (!mongoose.isValidObjectId(dto.clientId)) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid client ID');
 	}
 
-	const clientId = client._id;
-
-	if (!mongoose.isValidObjectId(clientId)) {
-		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid client ID');
+	// Check if the client exists
+	const client = await Client.findById(dto.clientId);
+	if (!client) {
+		throw new ApiError(httpStatus.NOT_FOUND, 'Client not found');
 	}
 
 	const noOfInvoice = client.noOfInvoice + 1;
@@ -28,10 +23,22 @@ const createInvoice = async (body: CreateInvoiceBody): Promise<IInvoice> => {
 	const formattedNoOfInvoice = String(noOfInvoice).padStart(3, '0');
 	const invoiceId = `PZ-0${formattedNoOfInvoice}`;
 
+	// Calculate subtotal and VAT
+	const subtotal = dto.products.reduce(
+		(acc, product) => acc + product.amount * product.quantity,
+		0,
+	);
+	const vat = 0.075 * subtotal; // Assuming a VAT rate of 7.5%
+
+	const grandTotal = subtotal + vat;
+
 	const invoiceBody = {
-		...body,
-		clientId,
+		clientId: dto.clientId,
 		invoiceId,
+		products: dto.products,
+		subtotal,
+		vat,
+		grandTotal,
 	};
 
 	const createdInvoice = await Invoice.create(invoiceBody);

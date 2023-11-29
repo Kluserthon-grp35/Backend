@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { objectId } from './custom.validation';
+import { checkNumber } from './custom.validation';
 
 /**
  * @description Validation schema for client profile creation.
@@ -50,8 +51,9 @@ const updateClient = {
 	body: Joi.object()
 		.keys({
 			clientEmail: Joi.string().email(),
-			clientName: Joi.string(),
-			clientPhoneNumber: Joi.string(),
+			firstName: Joi.string(),
+			lastName: Joi.string(),
+			clientPhoneNumber: Joi.string().custom(checkNumber),
 			clientAddress: Joi.string(),
 		})
 		.min(1),

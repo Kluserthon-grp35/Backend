@@ -1,18 +1,56 @@
 import httpStatus from 'http-status';
+import moment from 'moment';
 import Asyncly from '../utils/Asyncly';
-import { invoiceService } from '../services/index';
+import { emailService, invoiceService, userService } from '../services/index';
 import ApiError from '../utils/ApiError';
-import { Invoice } from '../models/index';
+import { Invoice } from '../services/email.service';
+import { logger } from '../config/logger';
 
 const createInvoice = Asyncly(async (req, res) => {
-	if (!req.body) {
-		throw new ApiError(httpStatus.BAD_REQUEST, 'Body cannot be empty');
+	console.log(req.body.products);
+	if (!req.body || !req.body.clientId || !req.body.products) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid request body');
 	}
 
-	const invoice = await invoiceService.createInvoice(req.body);
+	const client = await userService.getClientById(req.body.clientId);
+	const clientEmail = client?.clientEmail as string;
+
+	if (!clientEmail) {
+		throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid client email');
+	}
+
+	const invoice = await invoiceService.createInvoice({
+		...req.body,
+	});
 
 	if (!invoice) {
 		throw new ApiError(httpStatus.BAD_REQUEST, 'Invoice not created');
+	}
+
+	const emailData = {
+		invoiceId: invoice.invoiceId,
+		invoiceDate: moment(invoice.createdAt).format('DD-MM-YYYY'),
+		date: moment(invoice.dueDate).format('DD-MM-YYYY'),
+		clientName: client?.clientName as string,
+		products: invoice.products.map((product) => ({
+			productName: product.productName,
+			amount: product.amount,
+			quantity: product.quantity,
+		})),
+		subtotal: invoice.subtotal,
+		vat: invoice.vat,
+		grandTotal: invoice.grandTotal,
+		address: 'Client Address Placeholder',
+	};
+	console.log(emailData);
+	const isSent = await emailService.sendInvoice(
+		clientEmail,
+		emailData as unknown as Invoice,
+	);
+	if (isSent) {
+		logger.info('Email sent successdully');
+	} else {
+		logger.error('Email not sent');
 	}
 
 	res.status(httpStatus.CREATED).json({
@@ -140,7 +178,7 @@ const getUnpaidInvoicesController = Asyncly(async (req, res) => {
 		message: 'Invoices retrieved successfully',
 		data: invoices,
 	});
-})
+});
 
 const getOverdueInvoicesController = Asyncly(async (req, res) => {
 	const invoices = await invoiceService.getOverdueInvoices();
@@ -155,7 +193,7 @@ const getOverdueInvoicesController = Asyncly(async (req, res) => {
 		message: 'Invoices retrieved successfully',
 		data: invoices,
 	});
-})
+});
 
 const getClientInvoicesController = Asyncly(async (req, res) => {
 	const clientId = req.params?.clientId as string;
@@ -219,8 +257,6 @@ const getDueInvoicesController = Asyncly(async (req, res) => {
 		data: invoices,
 	});
 });
-
-
 
 export const invoiceController = {
 	createInvoice,

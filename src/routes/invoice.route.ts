@@ -24,14 +24,14 @@ invoiceRouter.get(
 	'/get/client/paid/:clientId',
 	validate(invoiceValidation.validateIdParams),
 	authMiddleware,
-	invoiceController.getClientPaidInvoicesController
+	invoiceController.getClientPaidInvoicesController,
 );
 
 invoiceRouter.get(
 	'/get/client/unpaid/:clientId',
 	validate(invoiceValidation.validateIdParams),
 	authMiddleware,
-	invoiceController.getClientUnpaidInvoicesController
+	invoiceController.getClientUnpaidInvoicesController,
 );
 
 invoiceRouter.get(
@@ -43,7 +43,7 @@ invoiceRouter.get(
 invoiceRouter.get(
 	'/get/due',
 	authMiddleware,
-	invoiceController.getDueInvoicesController
+	invoiceController.getDueInvoicesController,
 );
 
 invoiceRouter.patch(
@@ -60,11 +60,7 @@ invoiceRouter.delete(
 	invoiceController.deleteInvoiceById,
 );
 
-invoiceRouter.get(
-	'/all',
-	authMiddleware,
-	invoiceController.getAllInvoices,
-);
+invoiceRouter.get('/all', authMiddleware, invoiceController.getAllInvoices);
 
 invoiceRouter.get(
 	'/get/count',
